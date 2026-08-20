@@ -8,6 +8,9 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+# Keep generated reports ignored by default, but track the submission artefacts.
 reports/*.json
 reports/*.md
 !.gitkeep
+!reports/benchmark_report.md
+!reports/trace_evidence.json

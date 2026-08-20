@@ -1,8 +1,9 @@
-# Lab 20: Multi-Agent Research System Starter
+# Lab 20: Multi-Agent Research System
 
-Starter repo cho bài lab **Multi-Agent Systems**: xây dựng hệ thống nghiên cứu gồm **Supervisor + Researcher + Analyst + Writer** và benchmark với single-agent baseline.
+Repo hoàn chỉnh cho bài lab **Multi-Agent Systems**: xây dựng hệ thống nghiên cứu gồm **Supervisor + Researcher + Analyst + Writer** và benchmark với single-agent baseline.
 
-> Mục tiêu của repo này là cung cấp **production-grade skeleton** để học viên phát triển code cá nhân. Các phần logic quan trọng được để ở dạng `TODO` để học viên tự triển khai.
+> Repo này chứa một implementation hoàn chỉnh của research assistant multi-agent,
+> gồm baseline, workflow, guardrails, offline corpus search, tracing và benchmark.
 
 ## Learning outcomes
 
@@ -34,16 +35,16 @@ Trace + Benchmark Report
 ```text
 .
 ├── src/multi_agent_research_lab/
-│   ├── agents/              # Agent interfaces + skeletons
+│   ├── agents/              # Agent interfaces and workers
 │   ├── core/                # Config, state, schemas, errors
-│   ├── graph/               # LangGraph workflow skeleton
+│   ├── graph/               # LangGraph workflow
 │   ├── services/            # LLM, search, storage clients
-│   ├── evaluation/          # Benchmark/evaluation skeleton
+│   ├── evaluation/          # Benchmark and report generation
 │   ├── observability/       # Logging/tracing hooks
 │   └── cli.py               # CLI entrypoint
 ├── configs/                 # YAML configs for lab variants
 ├── docs/                    # Lab guide, rubric, design notes
-├── tests/                   # Unit tests for skeleton behavior
+├── tests/                   # Unit tests for workflow behavior
 ├── notebooks/               # Optional notebook entrypoint
 ├── scripts/                 # Helper scripts
 ├── .env.example             # Environment variables template
@@ -81,23 +82,24 @@ make test
 python -m multi_agent_research_lab.cli --help
 ```
 
-### 4. Chạy baseline skeleton
+### 4. Chạy baseline
 
 ```bash
 python -m multi_agent_research_lab.cli baseline \
   --query "Research GraphRAG state-of-the-art and write a 500-word summary"
 ```
 
-Lệnh này chỉ chạy khung baseline tối giản. Học viên cần tự triển khai logic LLM thực tế trong `src/multi_agent_research_lab/services/llm_client.py`.
+Lệnh này chạy single-agent baseline với LLM client và fallback offline.
 
-### 5. Chạy multi-agent skeleton
+### 5. Chạy multi-agent
 
 ```bash
 python -m multi_agent_research_lab.cli multi-agent \
   --query "Research GraphRAG state-of-the-art and write a 500-word summary"
 ```
 
-Mặc định lệnh sẽ báo các `TODO` cần làm. Đây là chủ đích của starter repo.
+Lệnh chạy workflow Supervisor → Researcher → Analyst → Writer và in ra shared state,
+route history, citations và trace events.
 
 ## Milestones trong 2 giờ lab
 
@@ -120,32 +122,23 @@ Mặc định lệnh sẽ báo các `TODO` cần làm. Đây là chủ đích c�
 - Không để agent chạy vô hạn: dùng `max_iterations`, `timeout_seconds`.
 - Có benchmark report thay vì chỉ demo output đẹp.
 
-## TODO chính cho học viên
+## Các thành phần đã hoàn thiện
 
-Tìm trong code các marker:
+Các thành phần chính đã được triển khai:
 
-```bash
-grep -R "TODO(student)" -n src tests docs
-```
-
-Các phần học viên cần tự làm:
-
-1. Implement LLM client.
-2. Implement web/search client hoặc mock search source.
-3. Implement routing decision trong Supervisor.
-4. Implement từng worker agent.
-5. Build LangGraph workflow.
-6. Thêm tracing provider thật: LangSmith, Langfuse hoặc OpenTelemetry.
-7. Viết benchmark report.
+- LLM client OpenAI có usage metadata và fallback offline.
+- Search client Tavily có timeout và fallback tới `ai_agent_offline_research_corpus_v2`.
+- Supervisor routing, LangGraph workflow, worker agents và guardrails.
+- Baseline, benchmark metrics, Markdown report và local trace evidence.
 
 ## Deliverables
 
 Học viên nộp:
 
 1. GitHub repo cá nhân.
-2. Screenshot trace hoặc link trace.
+2. Trace evidence: `reports/trace_evidence.json` hoặc link LangSmith/Langfuse.
 3. `reports/benchmark_report.md` so sánh single vs multi-agent.
-4. Một đoạn giải thích failure mode và cách fix.
+4. Exit ticket và phần giải thích failure mode trong tài liệu.
 
 ## References
 

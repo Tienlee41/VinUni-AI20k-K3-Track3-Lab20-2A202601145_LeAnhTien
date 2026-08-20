@@ -1,0 +1,185 @@
+{
+  "query": "Research GraphRAG state-of-the-art",
+  "mode": "offline_corpus",
+  "route_history": [
+    "researcher",
+    "analyst",
+    "writer"
+  ],
+  "trace": [
+    {
+      "name": "workflow.start",
+      "payload": {
+        "query": "Research GraphRAG state-of-the-art"
+      }
+    },
+    {
+      "name": "supervisor.route",
+      "payload": {
+        "next": "researcher",
+        "iteration": 1
+      }
+    },
+    {
+      "name": "agent.span",
+      "payload": {
+        "name": "agent.supervisor",
+        "attributes": {
+          "agent": "supervisor"
+        },
+        "duration_seconds": 4.709999484475702e-05,
+        "status": "ok"
+      }
+    },
+    {
+      "name": "researcher.search",
+      "payload": {
+        "query": "Research GraphRAG state-of-the-art",
+        "source_count": 5,
+        "provider": "configured"
+      }
+    },
+    {
+      "name": "agent.span",
+      "payload": {
+        "name": "agent.researcher",
+        "attributes": {
+          "agent": "researcher"
+        },
+        "duration_seconds": 0.021586199989542365,
+        "status": "ok"
+      }
+    },
+    {
+      "name": "supervisor.route",
+      "payload": {
+        "next": "analyst",
+        "iteration": 2
+      }
+    },
+    {
+      "name": "agent.span",
+      "payload": {
+        "name": "agent.supervisor",
+        "attributes": {
+          "agent": "supervisor"
+        },
+        "duration_seconds": 1.2500007869675756e-05,
+        "status": "ok"
+      }
+    },
+    {
+      "name": "analyst.synthesis",
+      "payload": {
+        "source_count": 5
+      }
+    },
+    {
+      "name": "agent.span",
+      "payload": {
+        "name": "agent.analyst",
+        "attributes": {
+          "agent": "analyst"
+        },
+        "duration_seconds": 6.049999501556158e-05,
+        "status": "ok"
+      }
+    },
+    {
+      "name": "supervisor.route",
+      "payload": {
+        "next": "writer",
+        "iteration": 3
+      }
+    },
+    {
+      "name": "agent.span",
+      "payload": {
+        "name": "agent.supervisor",
+        "attributes": {
+          "agent": "supervisor"
+        },
+        "duration_seconds": 1.0000003385357559e-05,
+        "status": "ok"
+      }
+    },
+    {
+      "name": "writer.complete",
+      "payload": {
+        "answer_length": 1200,
+        "citation_count": 1
+      }
+    },
+    {
+      "name": "agent.span",
+      "payload": {
+        "name": "agent.writer",
+        "attributes": {
+          "agent": "writer"
+        },
+        "duration_seconds": 0.00018599999020807445,
+        "status": "ok"
+      }
+    },
+    {
+      "name": "workflow.complete",
+      "payload": {
+        "iterations": 3
+      }
+    }
+  ],
+  "agent_results": [
+    {
+      "agent": "supervisor",
+      "content": "Next route: researcher",
+      "metadata": {
+        "iteration_limit": 6
+      }
+    },
+    {
+      "agent": "researcher",
+      "content": "Research question: Research GraphRAG state-of-the-art Evidence packets: [metagpt] MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework: Source orientation. MetaGPT framed multi-agent collaboration around standardized operating procedures and specialized roles, particularly for software development. It also explicitly discussed cascading hallucinations as a risk of naively chaining model outputs. The relevant design lesson is that structured artifacts and role-specific checks can be preferable to unconstrained conversational chains. Relevance to this topic. For Single-Agent vs Multi-Agent Architectures for Complex Research Tasks, this reference is included because it provides a conceptual, architectural, benchmarking, or governance anchor that the research system can use without opening the external URL. The benchmark expects the agent to connect the source to a specific claim rather than cite it decoratively. A source about an architecture should support statements about that architecture; a benchmark should support statements about observed evaluation behavior; a security or governance document should support risk-management recommendations. Evidence-use guidance. D",
+      "metadata": {
+        "source_count": 5,
+        "cost_usd": 0.0
+      }
+    },
+    {
+      "agent": "supervisor",
+      "content": "Next route: analyst",
+      "metadata": {
+        "iteration_limit": 6
+      }
+    },
+    {
+      "agent": "analyst",
+      "content": "Question: Research GraphRAG state-of-the-art Research notes: Research question: Research GraphRAG state-of-the-art Evidence packets: [metagpt] MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework: Source orientation. MetaGPT framed multi-agent collaboration around standardized operating procedures and specialized roles, particularly for software development. It also explicitly discussed cascading hallucinations as a risk of naively chaining model outputs. The relevant design lesson is that structured artifacts and role-specific checks can be preferable to unconstrained conversational chains. Relevance to this topic. For Single-Agent vs Multi-Agent Architectures for Complex Research Tasks, this reference is included because it provides a conceptual, architectural, benchmarking, or governance anchor that the research system can use without opening the external URL. The benchmark expects the agent to connect the source to a specific claim rather than cite it decoratively. A source about an architecture should support statements about that architecture; a benchmark should support statements about observed evaluation behavior; a security or governance document should supp",
+      "metadata": {
+        "source_ids": [
+          "metagpt",
+          "anthropic_agents",
+          "llm_agents_blog",
+          "A02",
+          "A05"
+        ],
+        "cost_usd": 0.0
+      }
+    },
+    {
+      "agent": "supervisor",
+      "content": "Next route: writer",
+      "metadata": {
+        "iteration_limit": 6
+      }
+    },
+    {
+      "agent": "writer",
+      "content": "Question: Research GraphRAG state-of-the-art Research notes: Research question: Research GraphRAG state-of-the-art Evidence packets: [metagpt] MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework: Source orientation. MetaGPT framed multi-agent collaboration around standardized operating procedures and specialized roles, particularly for software development. It also explicitly discussed cascading hallucinations as a risk of naively chaining model outputs. The relevant design lesson is that structured artifacts and role-specific checks can be preferable to unconstrained conversational chains. Relevance to this topic. For Single-Agent vs Multi-Agent Architectures for Complex Research Tasks, this reference is included because it provides a conceptual, architectural, benchmarking, or governance anchor that the research system can use without opening the external URL. The benchmark expects the agent to connect the source to a specific claim rather than cite it decoratively. A source about an architecture should support statements about that architecture; a benchmark should support statements about observed evaluation behavior; a security or governance document should supp",
+      "metadata": {
+        "citation_count": 1,
+        "cost_usd": 0.0
+      }
+    }
+  ],
+  "errors": []
+}

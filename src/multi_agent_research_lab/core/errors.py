@@ -6,7 +6,7 @@ class LabError(Exception):
 
 
 class StudentTodoError(LabError):
-    """Raised where learners are expected to implement core logic."""
+    """Legacy compatibility error; no production path raises it."""
 
 
 class AgentExecutionError(LabError):

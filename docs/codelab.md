@@ -52,7 +52,7 @@ overview:
     - "Thêm guardrail tối thiểu: max iterations, timeout, retry/fallback, validation"
     - "Trace được luồng chạy và giải thích agent nào làm gì, tốn bao nhiêu"
     - "Benchmark single-agent vs multi-agent theo quality, latency, cost"
-  reassurance: "Starter repo đã có sẵn khung production-grade (config, schema, test, CI). Bạn chỉ cần điền logic vào các điểm TODO(student) — mỗi điểm đều có docstring hướng dẫn, và test sẽ báo rõ khi bạn hoàn thành đúng."
+  reassurance: "Repository hiện đã có implementation production-grade (config, schema, test, CI, workflow, trace và benchmark). Các milestone bên dưới mô tả cách review implementation."
 ---
 
 ## Kiến trúc tổng thể
@@ -149,7 +149,10 @@ make test              # 4 tests phải pass ngay từ đầu
 
 ## 4. Thực hành
 
-Tìm toàn bộ điểm cần làm bằng: `grep -R "TODO(student)" -n src tests docs`
+Kiểm tra implementation bằng: `rg -n "TODO\\(student\\)|StudentTodoError" src tests`
+
+Trong phiên bản hoàn thiện này, production path không còn điểm TODO; các file
+submission gồm `reports/benchmark_report.md` và `reports/trace_evidence.json`.
 
 ### Bước 1 — LLM client & Baseline (0-30')
 
@@ -190,15 +193,15 @@ Tìm toàn bộ điểm cần làm bằng: `grep -R "TODO(student)" -n src tests
 make lint        # ruff: phải "All checks passed!"
 make test        # pytest: tất cả pass
 make run-baseline
-make run-multi   # không còn panel "Expected TODO"
-grep -R "TODO(student)" -n src | wc -l   # các TODO cốt lõi đã được thay bằng implementation
+make run-multi   # chạy đầy đủ Supervisor -> Researcher -> Analyst -> Writer
+rg -n "TODO\\(student\\)|StudentTodoError" src   # không có kết quả trong production path
 ```
 
 **Lỗi thường gặp:**
 
 | Lỗi | Nguyên nhân | Cách xử lý |
 | --- | --- | --- |
-| `StudentTodoError: implement MultiAgentWorkflow.run` | Chưa implement workflow — đây là hành vi mặc định của starter | Làm Bước 2 |
+| Workflow không trả về final answer | Kiểm tra nguồn search, timeout và route history | Chạy local corpus fallback và xem `trace_evidence.json` |
 | `SSLCertVerificationError` trên macOS | Python không tìm thấy CA bundle của hệ điều hành | Xem Troubleshooting trong `docs/lab_guide.md`: dùng `certifi` hoặc chạy `Install Certificates.command` |
 | Workflow lặp vô hạn Supervisor ↔ Researcher | Thiếu stop condition / không tăng `iteration` | Dùng `state.record_route()` và check `max_iterations` từ `Settings` |
 | `401 Unauthorized` khi gọi LLM | Chưa điền key vào `.env` hoặc chưa `cp .env.example .env` | Kiểm tra `.env`, không hard-code key trong code |
@@ -208,7 +211,7 @@ grep -R "TODO(student)" -n src | wc -l   # các TODO cốt lõi đã được th
 
 Artefact cần nộp:
 
-1. **Link GitHub repo cá nhân** — code hoàn chỉnh, `make lint` + `make test` pass, không còn `StudentTodoError` ở luồng chính.
-2. **Trace evidence** — screenshot hoặc link LangSmith/Langfuse của ít nhất 1 lần chạy multi-agent end-to-end.
+1. **Link GitHub repo cá nhân** — code hoàn chỉnh, `make lint` + `make test` pass.
+2. **Trace evidence** — `reports/trace_evidence.json` hoặc screenshot/link LangSmith/Langfuse của ít nhất 1 lần chạy multi-agent end-to-end.
 3. **`reports/benchmark_report.md`** — bảng so sánh single vs multi-agent (tối thiểu: latency, cost, quality) + 1 đoạn giải thích failure mode gặp phải và cách fix.
 4. **Exit ticket** — trả lời 2 câu hỏi trong `docs/lab_guide.md` (khi nào nên / không nên dùng multi-agent).

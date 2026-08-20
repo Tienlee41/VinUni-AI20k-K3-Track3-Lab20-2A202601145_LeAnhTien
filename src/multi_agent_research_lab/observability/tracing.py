@@ -1,7 +1,7 @@
 """Tracing hooks.
 
-This file intentionally avoids binding to one provider. Students can plug in LangSmith,
-Langfuse, OpenTelemetry, or simple JSON traces.
+This file intentionally avoids binding to one provider. The emitted span shape can be
+forwarded to LangSmith, Langfuse, OpenTelemetry, or a JSON exporter by the application.
 """
 
 from collections.abc import Iterator
@@ -12,14 +12,20 @@ from typing import Any
 
 @contextmanager
 def trace_span(name: str, attributes: dict[str, Any] | None = None) -> Iterator[dict[str, Any]]:
-    """Minimal span context used by the skeleton.
-
-    TODO(student): Replace or augment with LangSmith/Langfuse provider spans.
-    """
+    """Create a provider-neutral span with timing and completion status."""
 
     started = perf_counter()
-    span: dict[str, Any] = {"name": name, "attributes": attributes or {}, "duration_seconds": None}
+    span: dict[str, Any] = {
+        "name": name,
+        "attributes": attributes or {},
+        "duration_seconds": None,
+        "status": "ok",
+    }
     try:
         yield span
+    except Exception as exc:
+        span["status"] = "error"
+        span["error"] = str(exc)
+        raise
     finally:
         span["duration_seconds"] = perf_counter() - started

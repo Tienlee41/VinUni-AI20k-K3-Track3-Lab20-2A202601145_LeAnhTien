@@ -25,6 +25,7 @@ class ResearchState(BaseModel):
     agent_results: list[AgentResult] = Field(default_factory=list)
     trace: list[dict[str, Any]] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
+    max_iterations: int | None = None
 
     def record_route(self, route: str) -> None:
         self.route_history.append(route)
@@ -32,3 +33,8 @@ class ResearchState(BaseModel):
 
     def add_trace_event(self, name: str, payload: dict[str, Any]) -> None:
         self.trace.append({"name": name, "payload": payload})
+
+    def add_agent_result(self, result: AgentResult) -> None:
+        """Append an agent result while keeping the state history immutable to callers."""
+
+        self.agent_results.append(result)

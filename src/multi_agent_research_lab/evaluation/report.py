@@ -4,10 +4,7 @@ from multi_agent_research_lab.core.schemas import BenchmarkMetrics
 
 
 def render_markdown_report(metrics: list[BenchmarkMetrics]) -> str:
-    """Render benchmark metrics to markdown.
-
-    TODO(student): Add richer analysis, examples, screenshots, and trace links.
-    """
+    """Render benchmark metrics and a short interpretation to markdown."""
 
     lines = [
         "# Benchmark Report",
@@ -22,6 +19,23 @@ def render_markdown_report(metrics: list[BenchmarkMetrics]) -> str:
         failure = "" if item.failure_rate is None else f"{item.failure_rate:.0%}"
         lines.append(
             f"| {item.run_name} | {item.latency_seconds:.2f} | {cost} | {quality} "
-            f"| {citation} | {failure} | {item.notes} |"
+            f"| {citation} | {failure} | {item.notes.replace('|', '/')} |"
         )
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            "Quality is a transparent automated smoke-test score, not a substitute "
+            "for peer review. "
+            "Citation coverage counts cited identifiers that match retrieved source IDs.",
+            "",
+            "## Failure-mode notes",
+            "",
+            "The main operational risks are retrieval failure, unsupported claims, "
+            "provider timeouts, and citation mismatch. The workflow records route history, "
+            "trace events, errors, and token "
+            "usage so a reviewer can identify which stage needs correction.",
+        ]
+    )
     return "\n".join(lines) + "\n"
