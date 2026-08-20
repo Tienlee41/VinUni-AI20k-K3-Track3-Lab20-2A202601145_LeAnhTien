@@ -3,6 +3,8 @@
 import json
 import re
 from pathlib import Path
+from queue import Empty, Queue
+from threading import Thread
 from typing import Any
 from urllib.request import Request, urlopen
 
@@ -21,14 +23,28 @@ class SearchClient:
         """Return deduplicated, ranked source documents."""
 
         if self.settings.tavily_api_key:
-            try:
-                results = self._tavily_search(query, max_results)
-                if results:
-                    return results
-            except Exception:
-                # Offline/local evidence is a safe fallback for transient search failures.
-                pass
+            results = self._search_tavily_with_timeout(query, max_results)
+            if results:
+                return results
         return self._corpus_search(query, max_results)
+
+    def _search_tavily_with_timeout(self, query: str, max_results: int) -> list[SourceDocument]:
+        """Bound external search time even when the underlying socket does not return."""
+
+        outcome: Queue[tuple[list[SourceDocument] | None, Exception | None]] = Queue(maxsize=1)
+
+        def request_search() -> None:
+            try:
+                outcome.put((self._tavily_search(query, max_results), None))
+            except Exception as exc:
+                outcome.put((None, exc))
+
+        Thread(target=request_search, daemon=True, name="tavily-search").start()
+        try:
+            results, error = outcome.get(timeout=self.settings.search_timeout_seconds)
+        except Empty:
+            return []
+        return results if error is None and results is not None else []
 
     def _tavily_search(self, query: str, max_results: int) -> list[SourceDocument]:
         request = Request(
@@ -44,7 +60,7 @@ class SearchClient:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urlopen(request, timeout=self.settings.timeout_seconds) as response:
+        with urlopen(request, timeout=self.settings.search_timeout_seconds) as response:
             payload = response.read().decode("utf-8")
         response = json.loads(payload)
         return [

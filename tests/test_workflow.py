@@ -5,7 +5,8 @@ from multi_agent_research_lab.core.config import Settings
 from multi_agent_research_lab.core.schemas import ResearchQuery
 from multi_agent_research_lab.core.state import ResearchState
 from multi_agent_research_lab.graph.workflow import MultiAgentWorkflow
-from multi_agent_research_lab.services.llm_client import LLMClient
+from multi_agent_research_lab.services.baseline import run_baseline
+from multi_agent_research_lab.services.llm_client import LLMClient, LLMResponse
 from multi_agent_research_lab.services.search_client import SearchClient
 
 
@@ -46,3 +47,20 @@ def test_workflow_runs_end_to_end_with_offline_corpus() -> None:
     assert result.final_answer
     assert result.trace
     assert not result.errors
+
+
+class _FailingLLM(LLMClient):
+    def complete(self, system_prompt: str, user_prompt: str) -> LLMResponse:
+        del system_prompt, user_prompt
+        return LLMResponse(content="", error="provider timeout")
+
+
+def test_baseline_keeps_tavily_or_corpus_evidence_when_llm_fails() -> None:
+    settings = _offline_settings()
+    search = SearchClient(
+        settings=settings, corpus_root=Path("ai_agent_offline_research_corpus_v2")
+    )
+    state = run_baseline("Research multi-agent role specialization", search, _FailingLLM())
+
+    assert state.final_answer.startswith("## Web-search baseline")
+    assert state.agent_results[-1].metadata["provider_fallback"] is True

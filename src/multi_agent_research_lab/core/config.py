@@ -19,6 +19,10 @@ class Settings(BaseSettings):
 
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-4o-mini", validation_alias="OPENAI_MODEL")
+    llm_timeout_seconds: int = Field(
+        default=15, ge=3, le=120, validation_alias="LLM_TIMEOUT_SECONDS"
+    )
+    openai_max_retries: int = Field(default=0, ge=0, le=3, validation_alias="OPENAI_MAX_RETRIES")
 
     langsmith_api_key: str | None = Field(default=None, validation_alias="LANGSMITH_API_KEY")
     langsmith_enabled: bool = Field(default=False, validation_alias="LANGSMITH_ENABLED")
@@ -33,6 +37,9 @@ class Settings(BaseSettings):
     )
 
     tavily_api_key: str | None = Field(default=None, validation_alias="TAVILY_API_KEY")
+    search_timeout_seconds: int = Field(
+        default=10, ge=3, le=60, validation_alias="SEARCH_TIMEOUT_SECONDS"
+    )
 
     max_iterations: int = Field(default=6, ge=1, le=20, validation_alias="MAX_ITERATIONS")
     timeout_seconds: int = Field(default=60, ge=5, le=600, validation_alias="TIMEOUT_SECONDS")

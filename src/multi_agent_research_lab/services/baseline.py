@@ -28,13 +28,38 @@ def run_baseline(
         f"Question: {request.query}\nEvidence:\n{evidence}\n"
         "Write a concise answer and cite source IDs in square brackets.",
     )
-    state.final_answer = response.content or evidence
+    state.final_answer = (
+        _web_search_fallback(request, state) if response.error else response.content or evidence
+    )
     state.add_agent_result(
         AgentResult(
             agent=AgentName.WRITER,
             content=state.final_answer,
-            metadata={"cost_usd": response.cost_usd, "source_count": len(state.sources)},
+            metadata={
+                "cost_usd": response.cost_usd,
+                "source_count": len(state.sources),
+                "provider_fallback": bool(response.error),
+            },
         )
     )
-    state.add_trace_event("baseline.complete", {"source_count": len(state.sources)})
+    state.add_trace_event(
+        "baseline.complete",
+        {"source_count": len(state.sources), "provider_fallback": bool(response.error)},
+    )
     return state
+
+
+def _web_search_fallback(request: ResearchQuery, state: ResearchState) -> str:
+    """Render Tavily evidence when the LLM provider is unavailable or times out."""
+
+    lines = [
+        "## Web-search baseline",
+        "",
+        f"OpenAI did not respond in time, so this answer lists the retrieved evidence for: "
+        f"{request.query}",
+        "",
+    ]
+    for source in state.sources[:5]:
+        citation = source.metadata.get("source_id", source.url or source.title)
+        lines.append(f"- [{citation}] **{source.title}** — {source.snippet[:350]}")
+    return "\n".join(lines)
